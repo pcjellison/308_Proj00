@@ -36,13 +36,13 @@ namespace Jellison_Payton
             {
                 playerHand.Clear();
                 dealerHand.Clear();
+                handValue = 0;
+                dealerHandValue = 0;
                 Console.WriteLine("========== New Game ==========");
                 Console.WriteLine("You have: $" + remaining);
                 Console.WriteLine("How much do you bet: ");
                 bet = Convert.ToInt32(Console.ReadLine());
                 Console.WriteLine("You bet $" + bet);
-                handValue = 0;
-                dealerHandValue = 0;
                 numDealtPlayer = 2;
                 numDealtDealer = 2;
                 uxDealing();
@@ -56,28 +56,29 @@ namespace Jellison_Payton
                     player.Add(card);
                 }
                 playerHand = player.GetHand;
-                uxDisplay(playerHand);
+                uxDisplay();
             }
 
 
-            void uxDisplay(List<Card> hand)
+            void uxDisplay()
             {
                 Console.Write("Your hand: ");
-                for (int i = 0; i < hand.Count; i++)
+                for (int i = 0; i < playerHand.Count; i++)
                 {
-                    Console.Write(hand[i].Rank + hand[i].Suit + " ");
-                    handValue += hand[i].Value;
+                    Console.Write(playerHand[i].Rank + playerHand[i].Suit + " ");
+                    handValue += playerHand[i].Value;
                 }
+                Console.WriteLine(",  Hand Value: " + handValue);
+                handValue = 0;
                 if (handValue > 20)
                 {
                     uxGameOver();
                 }
-                Console.WriteLine(",  Hand Value: " + handValue);
                 Console.Write("Do you want to surrender <Y or N>? : ");
                 string surr = Console.ReadLine();
                 if (surr == "Y" || surr == "y")
                 {
-                    uxGameOver();
+                    uxQuit();
                 }
                 else
                 {
@@ -129,20 +130,20 @@ namespace Jellison_Payton
                 {
                     Console.Write(dealerHand[0].Rank + dealerHand[0].Suit + " ");
                     Console.Write(" XX");
+                    Console.WriteLine(" ");
                     for (int i = 0; i < dealerHand.Count; i++)
                     {
                         dealerHandValue += dealerHand[i].Value;
                     }
-
+                    numDealtDealer = 1;
                     if (dealerHandValue >= 17)
                     {
-                        uxPlayerHit();
+                        uxGameOver();
                     }
                     else
                     {
                         uxPlayerStand();
                     }
-                    numDealtDealer = 1;
                 }
                 else
                 {
@@ -152,12 +153,13 @@ namespace Jellison_Payton
                         dealerHandValue += dealerHand[i].Value;
                     }
                     Console.WriteLine(",  Hand Value: " + dealerHandValue);
+                    dealerHandValue = 0;
                 }
             }
 
             void uxGameOver()
             {
-                
+                Console.WriteLine(" ");
                 double award = bet;
                 int tempBet = bet;
                 if (handValue == 21)
@@ -236,6 +238,11 @@ namespace Jellison_Payton
                 int cardNum = rand.Next(1, 53);
                 return deck.Deal(cardNum);
               }
+
+            void uxQuit()
+            {
+                Console.WriteLine("Thanks for Playing");
+            }
             }
         }
     }
