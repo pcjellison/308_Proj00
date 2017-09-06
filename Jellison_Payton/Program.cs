@@ -34,6 +34,11 @@ namespace Jellison_Payton
             uxNewGame();
             void uxNewGame()
             {
+                if (remaining <= 0)
+                {
+                    Console.WriteLine("You have no funds left.");
+                    uxQuit();
+                }
                 playerHand.Clear();
                 dealerHand.Clear();
                 handValue = 0;
@@ -69,12 +74,12 @@ namespace Jellison_Payton
                     handValue += playerHand[i].Value;
                 }
                 Console.WriteLine(",  Hand Value: " + handValue);
-                handValue = 0;
                 if (handValue > 20)
                 {
                     uxGameOver();
                 }
                 Console.Write("Do you want to surrender <Y or N>? : ");
+                handValue = 0;
                 string surr = Console.ReadLine();
                 if (surr == "Y" || surr == "y")
                 {
