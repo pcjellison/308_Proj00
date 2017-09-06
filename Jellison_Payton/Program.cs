@@ -25,7 +25,6 @@ namespace Jellison_Payton
 
             Random rand = new Random();
             Deck deck = new Deck();
-            deck.createDeck();
             User player = new User();
             Dealer dealer = new Dealer();
             List<Card> playerHand = new List<Card>();
@@ -34,6 +33,7 @@ namespace Jellison_Payton
             uxNewGame();
             void uxNewGame()
             {
+                deck.createDeck();
                 if (remaining <= 0)
                 {
                     Console.WriteLine("You have no funds left.");
@@ -47,6 +47,11 @@ namespace Jellison_Payton
                 Console.WriteLine("You have: $" + remaining);
                 Console.WriteLine("How much do you bet: ");
                 bet = Convert.ToInt32(Console.ReadLine());
+                if(bet > remaining)
+                {
+                    Console.WriteLine("You don't have enough funds.");
+                    uxNewGame();
+                }
                 Console.WriteLine("You bet $" + bet);
                 numDealtPlayer = 2;
                 numDealtDealer = 2;
@@ -79,14 +84,16 @@ namespace Jellison_Payton
                     uxGameOver();
                 }
                 Console.Write("Do you want to surrender <Y or N>? : ");
-                handValue = 0;
                 string surr = Console.ReadLine();
                 if (surr == "Y" || surr == "y")
                 {
-                    uxQuit();
+                    handValue = 0;
+                    remaining -= (bet / 2);
+                    uxContinue();
                 }
-                else
+                else if (surr == "N" || surr == "n")
                 {
+                    handValue = 0;
                     Console.Write("Will you HIT or STAND <H or S>? : ");
                     string ans = Console.ReadLine();
 
@@ -94,10 +101,21 @@ namespace Jellison_Payton
                     {
                         uxPlayerHit();
                     }
-                    else
+                    else if (ans == "S" || ans == "s")
                     {
                         uxPlayerStand();
                     }
+                    else
+                    {
+                        Console.WriteLine("Invalid Input");
+                        uxDisplay();
+                    }
+                }
+                else
+                {
+                    handValue = 0;
+                    Console.WriteLine("Invalid Input");
+                    uxDisplay();
                 }
 
             }
@@ -115,13 +133,13 @@ namespace Jellison_Payton
             void uxPlayerHit()
             {
                 numDealtPlayer = 1;
-                if (handValue < 21 && dealerHandValue < 21)
+                if (handValue > 21 || dealerHandValue > 21)
                 {
-                    uxDealing();
+                    uxGameOver();
                 }
                 else
                 {
-                    uxGameOver();
+                    uxDealing();
                 }
             }
 
@@ -130,7 +148,7 @@ namespace Jellison_Payton
                 Console.WriteLine(" ");
                 Console.WriteLine("Now, Dealer's turn");
                 uxDealerDealing();
-                Console.WriteLine("Dealer's Hand: ");
+                Console.Write("Dealer's Hand: ");
                 if (dealerHand.Count == 2)
                 {
                     Console.Write(dealerHand[0].Rank + dealerHand[0].Suit + " ");
@@ -147,6 +165,7 @@ namespace Jellison_Payton
                     }
                     else
                     {
+                        dealerHandValue = 0;
                         uxPlayerStand();
                     }
                 }
@@ -158,7 +177,15 @@ namespace Jellison_Payton
                         dealerHandValue += dealerHand[i].Value;
                     }
                     Console.WriteLine(",  Hand Value: " + dealerHandValue);
-                    dealerHandValue = 0;
+                    if (dealerHandValue >= 17)
+                    {
+                        uxGameOver();
+                    }
+                    else
+                    {
+                        dealerHandValue = 0;
+                        uxPlayerStand();
+                    }
                 }
             }
 
@@ -235,6 +262,15 @@ namespace Jellison_Payton
                 {
                     uxNewGame();
                 }
+                else if (ans == "n" || ans == "N")
+                {
+                    uxQuit();
+                }
+                else
+                {
+                    Console.WriteLine("Invalid Input.");
+                    uxContinue();
+                }
             }
                 
                 //shuffles and draws card
@@ -247,7 +283,8 @@ namespace Jellison_Payton
             void uxQuit()
             {
                 Console.WriteLine("Thanks for Playing");
-            }
+                Environment.Exit(0);
             }
         }
     }
+}
